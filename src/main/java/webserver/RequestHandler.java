@@ -26,21 +26,16 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String line = br.readLine();
 
-            String[] test = line.split(" ");
-            logger.debug(test[1]);
+            String[] path = line.split(" ");
 
-            System.out.println("./templates" + test[1]);
-            byte[] a = FileIoUtils.loadFileFromClasspath("./templates" + test[1]);
-
-            logger.debug("fileLocation : " + new String(a));
             logger.debug("request : " + line);
             while(!line.equals("")){
                 line = br.readLine();
                 logger.debug("header : " + line);
             }
-            // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
+
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + test[1]);//"Hello World".getBytes();
+            byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + path[1]);//"Hello World".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
