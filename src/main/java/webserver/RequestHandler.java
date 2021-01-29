@@ -1,13 +1,12 @@
 package webserver;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.FileIoUtils;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -23,12 +22,28 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line = br.readLine();
+
+            String[] test = line.split(" ");
+            logger.debug(test[1]);
+
+            System.out.println("./templates" + test[1]);
+            byte[] a = FileIoUtils.loadFileFromClasspath("./templates" + test[1]);
+
+            logger.debug("fileLocation : " + new String(a));
+            logger.debug("request : " + line);
+            while(!line.equals("")){
+                line = br.readLine();
+                logger.debug("header : " + line);
+            }
             // TODO 사용자 요청에 대한 처리는 이 곳에 구현하면 된다.
             DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = "Hello World".getBytes();
+            byte[] body = FileIoUtils.loadFileFromClasspath("./templates" + test[1]);//"Hello World".getBytes();
             response200Header(dos, body.length);
             responseBody(dos, body);
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
         }
     }
